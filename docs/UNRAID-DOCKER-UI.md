@@ -26,6 +26,12 @@ Via the Unraid terminal or a share:
 ```
 Put AMD's **"Vivado ML — Full Product Installation" (Linux)** into the `installer` folder.
 
+**Then chown them to the container user (99:100 = `nobody:users`)** — the container runs as non-root
+`builder`, and if `/opt/Xilinx` is left `root:root` the installer fails with *Permission denied*:
+```bash
+chown -R 99:100 /mnt/user/appdata/vivado
+```
+
 ## 2. Docker → Add Container
 Toggle **Advanced View** (top-right) so all fields show, then set:
 
@@ -57,17 +63,32 @@ and you can exec into it.
 Click **Apply**. Unraid pulls the image and starts the container; it should show **started**.
 
 ## 3. Install Vivado (once) via the container Console
-Click the `vivado` container icon → **Console**. Then:
+Click the `vivado` container icon → **Console**. The installer (an `.iso`/`.bin`/`.tar.gz` or an
+already-extracted tree) is under `/installer`.
+
 ```bash
-# generate the install config for your Vivado version:
-d=$(find /installer -name xsetup -type f | head -1 | xargs dirname); cd "$d"
-./xsetup -b ConfigGen         # choose "Vivado ML Standard"; note where it saved the config
-cp <that-config> /installer/install_config.txt
-# run the headless install (~1 hour) into /opt/Xilinx:
-run-installer.sh
+# 1. generate the install config (interactive: pick Product 'Vivado', Edition 'Vivado ML Standard')
+d=$(find /installer -maxdepth 3 -name xsetup -type f | head -1 | xargs dirname); cd "$d"
+./xsetup -b ConfigGen
+# it writes the config to  ~/.Xilinx/install_config.txt  and prints that path.
+
+# 2. edit that config (it lives in the home dir, which IS writable — /installer is read-only):
+C=$HOME/.Xilinx/install_config.txt
+sed -i -e 's|^Destination=$|Destination=/opt/Xilinx|' \
+       -e 's|Zynq UltraScale+ MPSoCs:0|Zynq UltraScale+ MPSoCs:1|' \
+       -e 's|Zynq-7000 All Programmable SoC:0|Zynq-7000 All Programmable SoC:1|' \
+       -e 's|Vitis Model Composer(A toolbox for Simulink):1|Vitis Model Composer(A toolbox for Simulink):0|' \
+       -e 's|DocNav:1|DocNav:0|' "$C"
+
+# 3. run the headless install (~30-60 min):
+./xsetup --agree XilinxEULA,3rdPartyEULA --batch Install --config "$C"
 vivado -version               # verify
 ```
-(`run-installer.sh` reads `/installer/install_config.txt`, which is why you copy it there.)
+Notes:
+- **Don't** copy the config into `/installer` — that mount is **read-only**; keep it in `$HOME/.Xilinx`.
+- Module names are for 2025.2; regenerate with ConfigGen if your version differs.
+- To run detached (survives closing the Console): prefix with `docker exec -d vivado bash -lc '...'`
+  from the Unraid terminal, logging to `$HOME/vivado-install.log`.
 
 ## 4. Run builds
 From the container **Console**:
