@@ -3,7 +3,8 @@
 set -euo pipefail
 
 # Find the newest installed Vivado settings64.sh under /opt/Xilinx.
-settings="$(ls -d /opt/Xilinx/Vivado/*/settings64.sh 2>/dev/null | sort -V | tail -n1 || true)"
+# 2025.2+ layout is /opt/Xilinx/<ver>/Vivado/settings64.sh; older is /opt/Xilinx/Vivado/<ver>/.
+settings="$(ls -d /opt/Xilinx/*/Vivado/settings64.sh /opt/Xilinx/Vivado/*/settings64.sh 2>/dev/null | sort -V | tail -n1 || true)"
 if [[ -n "${settings}" && -f "${settings}" ]]; then
     # shellcheck disable=SC1090
     source "${settings}"
