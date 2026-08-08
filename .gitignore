@@ -1,0 +1,20 @@
+# Never commit Xilinx installers, binaries, or licenses.
+installer/
+!installer/.gitkeep
+licenses/
+!licenses/.gitkeep
+*.bin
+*.tar.gz
+*.tar.xz
+*.lic
+*.jou
+*.log
+
+# Local install config (generated per Vivado version; may reveal paths)
+install/install_config.txt
+
+# Env
+.env
+
+# macOS
+.DS_Store

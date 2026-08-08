@@ -1,0 +1,23 @@
+# Vivado batch-install config TEMPLATE.
+#
+# IMPORTANT: module/edition names change per Vivado version. Generate the real one
+# for YOUR installer version with:
+#     ./xsetup -b ConfigGen        # choose "Vivado ML Standard" (free)
+# then copy the result to install/install_config.txt. This template only shows the
+# shape and the choices that matter for a small headless build host.
+#
+# Free edition, device-limited to cut ~half the disk. Keep Zynq UltraScale+ (the
+# almost-least-weasel donor) and 7-series (the future least-weasel).
+
+Edition=Vivado ML Standard
+
+# Destination is passed on the command line (--location /opt/Xilinx); leave default.
+Destination=/opt/Xilinx
+
+# Install options — trim to keep the image host lean. Names are version-specific;
+# these are indicative. Regenerate with ConfigGen to get the exact keys.
+Modules=Zynq UltraScale+ MPSoC:1,Kintex UltraScale+:0,Zynq-7000:1,Artix-7:0,Kintex-7:0,Spartan-7:0,Virtex UltraScale+:0
+InstallOptions=Install Cable Drivers:0,Acquire or Manage a License Key:0,Enable WebTalk...:0
+CreateProgramGroupShortcuts=0
+CreateDesktopShortcuts=0
+CreateFileAssociation=0

@@ -1,0 +1,6 @@
+.git
+installer
+licenses
+.env
+*.log
+*.jou
