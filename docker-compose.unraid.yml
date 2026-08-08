@@ -1,0 +1,15 @@
+# Unraid override — run the build environment as a PERSISTENT container that shows
+# up in Unraid's Docker tab and can be exec'd into for builds.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.unraid.yml up -d
+#   docker exec -it vivado bash -lc "vivado -version"
+#
+# The base compose already bind-mounts the install dir (XILINX_DIR) to a host path,
+# so nothing here touches docker.img. Set XILINX_DIR / PROJECT_DIR to absolute
+# cache-pool paths in .env (see docs/UNRAID.md).
+
+services:
+  vivado:
+    container_name: vivado
+    command: ["sleep", "infinity"]
+    restart: unless-stopped

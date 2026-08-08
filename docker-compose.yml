@@ -1,12 +1,15 @@
 # docker compose for the Vivado build environment.
 #
-#   docker compose build                         # build the prereq image
-#   docker compose run --rm vivado run-installer.sh   # install Vivado into the volume
+#   docker compose build                              # build the prereq image
+#   docker compose run --rm vivado run-installer.sh   # install Vivado into XILINX_DIR
 #   docker compose run --rm vivado vivado -version    # sanity check
-#   docker compose run --rm vivado bash              # interactive shell
+#   docker compose run --rm vivado bash               # interactive shell
 #
-# Must run on an x86-64 Docker host (Vivado is x86-only). On Apple Silicon it would
-# fall back to slow emulation — use a real amd64 host.
+# For a persistent container (recommended on Unraid), also apply the override:
+#   docker compose -f docker-compose.yml -f docker-compose.unraid.yml up -d
+#   docker exec -it vivado bash -lc "vivado -version"
+#
+# Must run on an x86-64 Docker host (Vivado is x86-only).
 
 services:
   vivado:
@@ -17,22 +20,18 @@ services:
         GID: ${GID:-1000}
     image: vivado-docker:latest
     platform: linux/amd64
-    # A build host wants headroom; tune to the machine.
     shm_size: "2gb"
     environment:
-      # Free ML Standard usually needs no license. Set if you have a node-locked .lic.
       XILINXD_LICENSE_FILE: ${XILINXD_LICENSE_FILE:-}
     volumes:
-      # The AMD installer you downloaded (gitignored). Drop the .bin/.tar.gz here.
+      # AMD installer you downloaded (gitignored). Drop the .bin/.tar.gz here.
       - ./installer:/installer
-      # Persistent Vivado install — a named volume so the ~100GB survives rebuilds
-      # and never bloats an image layer.
-      - xilinx_install:/opt/Xilinx
+      # Persistent Vivado install as a HOST-PATH BIND MOUNT (not a named volume),
+      # so the ~100GB lives on real storage — critical on Unraid, where a named
+      # volume would overflow docker.img. Point XILINX_DIR at a cache-pool path.
+      - ${XILINX_DIR:-./_xilinx}:/opt/Xilinx
       # Optional node-locked license(s).
       - ./licenses:/licenses
       # Your project. Point PROJECT_DIR at the atem-av-fw checkout on the host.
       - ${PROJECT_DIR:-../atem-av-fw}:/workspace
     working_dir: /workspace
-
-volumes:
-  xilinx_install:

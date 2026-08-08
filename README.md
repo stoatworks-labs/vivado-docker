@@ -63,6 +63,11 @@ Long synth/impl runs should be backgrounded and polled rather than held open. Se
 [`atem-av-fw/hw/`](https://github.com/stoatworks-labs/atem-av-fw) for the Tcl this compiles and
 `docs`/`STATUS.md` there for how the outputs (utilisation/timing) feed the design decisions.
 
+## Running on Unraid
+See [`docs/UNRAID.md`](docs/UNRAID.md) — it handles the two Unraid specifics (bind-mount the
+100 GB install so it doesn't overflow `docker.img`, and run as a persistent `docker exec`-able
+container) and covers both the CLI and Compose Manager routes.
+
 ## Notes
 - **Free ML Standard** likely covers the target part (ZU4CG-class) and needs no license server; if
   you have a node-locked `.lic`, drop it in `./licenses/` and set `XILINXD_LICENSE_FILE` in `.env`.

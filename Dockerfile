@@ -35,6 +35,9 @@ RUN groupadd -g ${GID} builder 2>/dev/null || true \
 
 COPY --chmod=0755 scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY --chmod=0755 install/run-installer.sh /usr/local/bin/run-installer.sh
+# Put Vivado on PATH for login shells too, so `docker exec <c> bash -lc "vivado …"`
+# works (exec bypasses the entrypoint) — used by the persistent Unraid pattern.
+COPY scripts/profile-vivado.sh /etc/profile.d/zz-vivado.sh
 
 USER builder
 WORKDIR /workspace

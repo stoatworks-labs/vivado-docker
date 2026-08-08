@@ -13,6 +13,9 @@ licenses/
 # Local install config (generated per Vivado version; may reveal paths)
 install/install_config.txt
 
+# Local Vivado install dir (default bind-mount target)
+_xilinx/
+
 # Env
 .env
 
