@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libstdc++6 libc6 \
         xvfb x11-apps \
         locales ca-certificates \
-        tar unzip xz-utils procps net-tools wget \
+        tar unzip xz-utils libarchive-tools procps net-tools wget \
         graphviz \
     && rm -rf /var/lib/apt/lists/* \
     && locale-gen en_US.UTF-8

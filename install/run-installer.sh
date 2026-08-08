@@ -32,9 +32,15 @@ xsetup="$(find "${INSTALLER_DIR}" -maxdepth 3 -name xsetup -type f 2>/dev/null |
 if [[ -z "${xsetup}" ]]; then
     bin="$(find "${INSTALLER_DIR}" -maxdepth 1 -name '*.bin' | head -n1 || true)"
     tgz="$(find "${INSTALLER_DIR}" -maxdepth 1 \( -name '*.tar.gz' -o -name '*.tar' -o -name '*.tar.xz' \) | head -n1 || true)"
+    # Prefer the *Unified* ISO — the Vivado *Lab* ISO is programming-only (no synthesis).
+    iso="$(find "${INSTALLER_DIR}" -maxdepth 1 -iname '*Unified*.iso' | head -n1 || true)"
+    [[ -n "${iso}" ]] || iso="$(find "${INSTALLER_DIR}" -maxdepth 1 -iname '*.iso' ! -iname '*Lab*' | head -n1 || true)"
     workdir="${INSTALLER_DIR}/_extracted"
     mkdir -p "${workdir}"
-    if [[ -n "${bin}" ]]; then
+    if [[ -n "${iso}" ]]; then
+        echo "[run-installer] extracting ISO ${iso} (bsdtar, no mount needed) ..."
+        bsdtar -xpf "${iso}" -C "${workdir}"
+    elif [[ -n "${bin}" ]]; then
         echo "[run-installer] extracting self-extracting installer ${bin} ..."
         chmod +x "${bin}"
         "${bin}" --keep --noexec --target "${workdir}" || {
@@ -43,12 +49,13 @@ if [[ -z "${xsetup}" ]]; then
         echo "[run-installer] extracting ${tgz} ..."
         tar -xf "${tgz}" -C "${workdir}"
     else
-        echo "[run-installer] ERROR: no xsetup, .bin or .tar.gz found in ${INSTALLER_DIR}" >&2
-        echo "                Download the Vivado ML 'Full Product Installation' for Linux from AMD" >&2
-        echo "                and place it in the repo's ./installer directory." >&2
+        echo "[run-installer] ERROR: no xsetup, *Unified*.iso, .bin or .tar.gz in ${INSTALLER_DIR}" >&2
+        echo "                Use the Vivado ML 'Full Product Installation' / Unified installer for Linux." >&2
+        echo "                (The Vivado *Lab* ISO is programming-only and won't do synthesis.)" >&2
         exit 1
     fi
     xsetup="$(find "${workdir}" -maxdepth 3 -name xsetup -type f | head -n1 || true)"
+    [[ -n "${xsetup}" ]] && chmod +x "${xsetup}" 2>/dev/null || true
 fi
 
 [[ -n "${xsetup}" ]] || { echo "[run-installer] ERROR: could not locate xsetup after extraction" >&2; exit 1; }
