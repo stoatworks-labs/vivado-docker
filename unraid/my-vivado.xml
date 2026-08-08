@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>vivado</Name>
+  <Repository>ghcr.io/stoatworks-labs/vivado-docker:latest</Repository>
+  <Registry>https://github.com/stoatworks-labs/vivado-docker/pkgs/container/vivado-docker</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support/>
+  <Project>https://github.com/stoatworks-labs/vivado-docker</Project>
+  <Overview>Headless AMD/Xilinx Vivado build environment. The image contains NO Vivado&#13;
+- install it once via the container Console (run-installer.sh) into the mounted&#13;
+/opt/Xilinx folder, then run batch Tcl builds via Console or 'docker exec'. Keep&#13;
+everything on the cache pool; 32 GB RAM recommended. Runs as nobody:users (99:100).</Overview>
+  <Category>Productivity: Other:</Category>
+  <WebUI/>
+  <TemplateURL/>
+  <Icon/>
+  <ExtraParams>--shm-size=2g</ExtraParams>
+  <PostArgs>sleep infinity</PostArgs>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Description>Headless Vivado build environment (no Vivado in the image; installed at runtime into /opt/Xilinx). See docs/UNRAID-DOCKER-UI.md.</Description>
+  <Networking>
+    <Mode>bridge</Mode>
+  </Networking>
+  <Data>
+    <Volume>
+      <HostDir>/mnt/user/appdata/vivado/xilinx</HostDir>
+      <ContainerDir>/opt/Xilinx</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdata/vivado/installer</HostDir>
+      <ContainerDir>/installer</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdata/vivado/licenses</HostDir>
+      <ContainerDir>/licenses</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdata/atem-av-fw</HostDir>
+      <ContainerDir>/workspace</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+  </Data>
+  <Environment>
+    <Variable>
+      <Value/>
+      <Name>XILINXD_LICENSE_FILE</Name>
+      <Target>XILINXD_LICENSE_FILE</Target>
+    </Variable>
+  </Environment>
+  <Config Name="Xilinx install (~100GB)" Target="/opt/Xilinx" Default="/mnt/user/appdata/vivado/xilinx" Mode="rw" Description="Where Vivado gets installed. Put it on the cache pool." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/vivado/xilinx</Config>
+  <Config Name="Installer" Target="/installer" Default="/mnt/user/appdata/vivado/installer" Mode="rw" Description="Drop AMD's OFFLINE Vivado installer (and install_config.txt) here." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/vivado/installer</Config>
+  <Config Name="Licenses" Target="/licenses" Default="/mnt/user/appdata/vivado/licenses" Mode="rw" Description="Optional node-locked .lic files (free ML Standard needs none)." Type="Path" Display="always" Required="false" Mask="false">/mnt/user/appdata/vivado/licenses</Config>
+  <Config Name="Workspace (project)" Target="/workspace" Default="/mnt/user/appdata/atem-av-fw" Mode="rw" Description="The FPGA project checkout that gets built (e.g. atem-av-fw)." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/atem-av-fw</Config>
+  <Config Name="License file (optional)" Target="XILINXD_LICENSE_FILE" Default="" Mode="" Description="Path to a node-locked .lic inside the container, e.g. /licenses/Xilinx.lic. Leave empty for free ML Standard." Type="Variable" Display="always" Required="false" Mask="false"></Config>
+</Container>
