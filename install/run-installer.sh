@@ -16,7 +16,13 @@ set -euo pipefail
 
 INSTALLER_DIR=/installer
 DEST=/opt/Xilinx
-CONFIG=/install/install_config.txt
+# Config travels via the mounted installer/ dir (works for the compose, registry and
+# Unraid-UI paths alike); fall back to the baked-in repo location for the CLI path.
+if [[ -f "${INSTALLER_DIR}/install_config.txt" ]]; then
+    CONFIG="${INSTALLER_DIR}/install_config.txt"
+else
+    CONFIG=/install/install_config.txt
+fi
 
 echo "[run-installer] looking for an installer under ${INSTALLER_DIR} ..."
 
@@ -55,8 +61,8 @@ if [[ ! -f "${CONFIG}" ]]; then
     Module and EULA names differ per Vivado version, so generate a fresh config:
         cd "${srcdir}"
         ./xsetup -b ConfigGen        # pick 'Vivado ML Standard', save the config
-    then copy it to the repo's install/install_config.txt and re-run this script.
-    (A starting template is in install/install_config.template.txt.)
+    then copy it to /installer/install_config.txt (the installer/ folder on the host)
+    and re-run this script. (A template is in install/install_config.template.txt.)
 EOF
     exit 2
 fi

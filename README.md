@@ -64,9 +64,15 @@ Long synth/impl runs should be backgrounded and polled rather than held open. Se
 `docs`/`STATUS.md` there for how the outputs (utilisation/timing) feed the design decisions.
 
 ## Running on Unraid
-See [`docs/UNRAID.md`](docs/UNRAID.md) — it handles the two Unraid specifics (bind-mount the
-100 GB install so it doesn't overflow `docker.img`, and run as a persistent `docker exec`-able
-container) and covers both the CLI and Compose Manager routes.
+- **[`docs/UNRAID-DOCKER-UI.md`](docs/UNRAID-DOCKER-UI.md)** — the native **Docker → Add Container**
+  template route (pulls the CI-built image from GHCR; field-by-field).
+- **[`docs/UNRAID.md`](docs/UNRAID.md)** — the CLI / Compose Manager route.
+
+Both handle the two Unraid specifics: bind-mount the 100 GB install so it doesn't overflow
+`docker.img`, and run as a persistent `docker exec`-able container.
+
+The prerequisite image is published to **`ghcr.io/stoatworks-labs/vivado-docker`** by CI — so hosts
+can pull it instead of building locally.
 
 ## Notes
 - **Free ML Standard** likely covers the target part (ZU4CG-class) and needs no license server; if
